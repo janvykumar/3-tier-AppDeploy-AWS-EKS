@@ -165,8 +165,13 @@ $ kubectl apply -f sevice.yaml
 To see the deployments --> kubectl get deployment -n three-tier
 services running --> kubectl get svc -n three-tier
 ```
+With this we have deployed MongoDB.
 
-With this we have deployed MongoDB
+
+
+![Deployments and services running](https://github.com/janvykumar/3-tier-AppDeploy-AWS-EKS/blob/main/Screenshot%202024-05-28%20233214.png?raw=true)
+
+
 
 
 
