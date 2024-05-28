@@ -195,7 +195,7 @@ $ kubectl get pods -n three-tier
 ```
 
 
-All the three tier's (frontend, backend, database)are deployed now.
+All the three tier's (frontend, backend, database) are deployed now.
 
 ![Deployments and services running](https://github.com/janvykumar/3-tier-AppDeploy-AWS-EKS/blob/main/Screenshot%202024-05-28%20234156.png?raw=true)
 
@@ -231,6 +231,13 @@ Hit ALB DNS name in your browser --> http://k8s-threetie-mainlb-73c240e86c-33022
 Our three-tier is Application is deployed. It's up and running!!
 
 ![3-tier App](https://github.com/janvykumar/3-tier-AppDeploy-AWS-EKS/blob/main/Screenshot%202024-05-28%20214548.png?raw=true)
+
+## Cleanup
+
+To delete the EKS Cluster
+```bash
+$ eksctl delete cluster --name three-tier-cluster --region us-west-2
+```
 
 
 
