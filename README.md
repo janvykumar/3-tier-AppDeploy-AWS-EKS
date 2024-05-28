@@ -179,18 +179,53 @@ $ kubectl apply -f service.yaml
 $ kubectl get pods -n three-tier
 $ kubectl logs api-7c8795fdf6-rrj6q -n three-tier (backend should be able to connect to database)
 ```
-![Backend connected to database]()
-Deploying frontend
+![Backend connected to database](https://github.com/janvykumar/3-tier-AppDeploy-AWS-EKS/blob/main/Screenshot%202024-05-28%20234809.png?raw=true)
 
-cd /home/ubuntu/3-tier-AppDeploy-AWS-EKS/Kubernetes-Manifests-file/Frontend
+### Deploying frontend
+
+```bash
+$ cd /home/ubuntu/3-tier-AppDeploy-AWS-EKS/Kubernetes-Manifests-file/Frontend
+```
 In deployment.yaml file, image should be pointed to three-tier-frontend ECR Image
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
-kubectl get pods -n three-tier
+```bash
+$ kubectl apply -f deployment.yaml
+$ kubectl apply -f service.yaml
+$ kubectl get pods -n three-tier
+```
 
 All our tier's are deployed now.
 
 ![Deployments and services running](https://github.com/janvykumar/3-tier-AppDeploy-AWS-EKS/blob/main/Screenshot%202024-05-28%20234156.png?raw=true)
+
+### Install AWS Load Balancer 
+
+```bash
+$ curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.5.4/docs/install/iam_policy.json
+$ aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+$ eksctl utils associate-iam-oidc-provider --region=us-west-2 --cluster=three-tier-cluster --approve
+$ eksctl create iamserviceaccount --cluster=three-tier-cluster --namespace=kube-system --name=aws-load-balancer-controller --role-name AmazonEKSLoadBalancerControllerRole --attach-policy-arn=arn:aws:iam::471112920421:policy/AWSLoadBalancerControllerIAMPolicy --approve --region=us-west-2
+```
+
+Deploy AWS Load Balancer Controller inside our Kubernetes Cluster
+```bash
+$ sudo snap install helm --classic
+$ helm repo add eks https://aws.github.io/eks-charts
+$ helm repo update eks
+$ helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=three-tier-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller
+$ kubectl get deployment -n kube-system aws-load-balancer-controller
+```
+![load balancer]()
+
+Apply the ingress.yaml file.
+```bash
+$ kubectl apply -f ingress.yaml
+```
+
+Hit ALB DNS name in your browser --> http://k8s-threetie-mainlb-73c240e86c-330226829.us-west-2.elb.amazonaws.com/
+Our three-tier is Application is deployed. It's up and running!!
+
+![3-tier App]()
+
 
 
 
