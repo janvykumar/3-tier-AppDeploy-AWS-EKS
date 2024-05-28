@@ -35,7 +35,7 @@ $ sudo chown $USER /var/run/docker.sock (givinig perms for Ubuntu user to run do
 $ docker ps
 ```
 
-## Let's start with deploying frontend first. We will be installing other tools as and when required.
+## Frontend
 
 ### Create Docker file
 ```bash
@@ -69,7 +69,104 @@ Creating Repository on AWS ECR (Elastic Container Registry)
 AWS --> ECR --> create repository --> public --> Name: three-tier-frontend --> create
 ```
 We need to push our image in this repository. Click on "view push commands". You will see the commands here. Follow them.
+```bash
+Retrieve an authentication token and authenticate your Docker client to your registry. Use the AWS CLI:
+$ aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/d7p5s2q3
+Build your Docker image using the following command ( This command needs to be run in the directory where your frontend docker file resides)
+$ docker build -t three-tier-frontend .
+$ docker tag three-tier-frontend:latest public.ecr.aws/d7p5s2q3/three-tier-frontend:latest
+Run the following command to push this image to your newly created AWS repository:
+$ docker push public.ecr.aws/d7p5s2q3/three-tier-frontend:latest
+```
 
+## Backend
+
+Follow the same steps for backend as that of frontend. Create the Docker file for backend and push the image to ECR.
+```bash
+$ cd /home/ubuntu/3-tier-AppDeploy-AWS-EKS/Application-Code/backend
+```
+Create Docker file. Refer Application-Code/backend/Dockerfile of this repo to get the Docker file.
+
+Creating ECR Repository and pushing the image
+```bash
+AWS --> ECR --> Create repository "three-tier-backend" and run the push commands.
+In cli,
+$ aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/d7p5s2q3
+$ docker build -t three-tier-backend .
+$ docker run -d -p 8080:8080 three-tier-backend:latest (To run the image)
+$ docker ps
+Tag to ECR and push it
+$ docker tag three-tier-backend:latest public.ecr.aws/d7p5s2q3/three-tier-backend:latest
+$ docker push public.ecr.aws/d7p5s2q3/three-tier-backend:latest
+```
+
+## Set up MongoDB using kubernetes (EKS)
+
+### Install kubectl
+```bash
+$ curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+$ chmod +x ./kubectl
+$ sudo mv ./kubectl /usr/local/bin
+$ kubectl version --short --client
+```
+
+### Install eksctl
+```bash
+$ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+$ sudo mv /tmp/eksctl /usr/local/bin
+$ eksctl version
+```
+
+### Setup EKS Cluster
+```bash
+$ eksctl create cluster --name three-tier-cluster --region us-west-2 --node-type t2.medium --nodes-min 2 --nodes-max 2 ( stack is deployed using cloud formation)
+$ aws eks update-kubeconfig --region us-west-2 --name three-tier-cluster
+$ kubectl get nodes
+```
+
+## Deploying MongoDB
+
+```bash
+$ cd /home/ubuntu/3-tier-AppDeploy-AWS-EKS/Kubernetes-Manifests-file/Database
+```
+Files in this folder are as follows:
+
+1. deployment.yml - To create the pod
+
+2. secrets.yml - To create username and password.
+
+To encrypt the credentials
+```bash
+$ echo 'password_to_encrypt' | base64
+```
+              
+To decrypt 
+```bash
+$ echo 'password_to_decrypt'| base64 --decode
+```
+
+Add the encrytpted username and password to secrets.yaml
+              
+3. services.yml - makes mongodb accessible to other services
+
+To create a namespace
+```bash
+$ kubectl create namespace three-tier
+```
+To run these files
+```bash
+$ kubectl apply -f deployment.yaml
+$ kubectl apply -f secrets.yaml
+$ kubectl apply -f pv.yaml
+$ kubectl apply -f pvc.yaml
+$ kubectl apply -f sevice.yaml
+```
+```bash
+To see the deployments --> kubectl get deployment -n three-tier
+services running --> kubectl get svc -n three-tier
+```
+
+With this we have deployed MongoDB
 
 
 
