@@ -49,7 +49,9 @@ $ To run the image : docker run -d -p 3000:3000 three-tier-frontend:latest ( rea
 $ To see if the container is up and running : docker ps
 ```
 You need to add an inbound rule for your instance allowing custom TCP 3000 port from anywhere.
+
 Hit IPaddress:3000 on your browser --> you should be able to see the Todo app (frontend only) running.
+
 After verification, you can kill this docker process : 
 ```bash
 $ docker kill containerID
