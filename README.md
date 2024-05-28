@@ -167,7 +167,7 @@ services running --> kubectl get svc -n three-tier
 ```
 With this we have deployed MongoDB.
 
-### Deploying Backend
+## Deploying Backend
 
 ```bash
 $ cd /home/ubuntu/3-tier-AppDeploy-AWS-EKS/Kubernetes-Manifests-file/Backend
@@ -181,7 +181,8 @@ $ kubectl logs api-7c8795fdf6-rrj6q -n three-tier (backend should be able to con
 ```
 ![Backend connected to database](https://github.com/janvykumar/3-tier-AppDeploy-AWS-EKS/blob/main/Screenshot%202024-05-28%20234809.png?raw=true)
 
-### Deploying frontend
+
+## Deploying frontend
 
 ```bash
 $ cd /home/ubuntu/3-tier-AppDeploy-AWS-EKS/Kubernetes-Manifests-file/Frontend
@@ -193,11 +194,13 @@ $ kubectl apply -f service.yaml
 $ kubectl get pods -n three-tier
 ```
 
-All our tier's are deployed now.
+
+All the three tier's (frontend, backend, database)are deployed now.
 
 ![Deployments and services running](https://github.com/janvykumar/3-tier-AppDeploy-AWS-EKS/blob/main/Screenshot%202024-05-28%20234156.png?raw=true)
 
-### Install AWS Load Balancer 
+
+## Install AWS Load Balancer 
 
 ```bash
 $ curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.5.4/docs/install/iam_policy.json
@@ -214,17 +217,20 @@ $ helm repo update eks
 $ helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=three-tier-cluster --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller
 $ kubectl get deployment -n kube-system aws-load-balancer-controller
 ```
-![load balancer]()
+![load balancer](https://github.com/janvykumar/3-tier-AppDeploy-AWS-EKS/blob/main/Screenshot%202024-05-28%20214239.png?raw=true)
+
 
 Apply the ingress.yaml file.
 ```bash
 $ kubectl apply -f ingress.yaml
 ```
 
+
 Hit ALB DNS name in your browser --> http://k8s-threetie-mainlb-73c240e86c-330226829.us-west-2.elb.amazonaws.com/
+
 Our three-tier is Application is deployed. It's up and running!!
 
-![3-tier App]()
+![3-tier App](https://github.com/janvykumar/3-tier-AppDeploy-AWS-EKS/blob/main/Screenshot%202024-05-28%20214548.png?raw=true)
 
 
 
