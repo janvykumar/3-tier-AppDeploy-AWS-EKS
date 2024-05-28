@@ -52,10 +52,23 @@ You need to add an inbound rule for your instance allowing custom TCP 3000 port 
 Hit IPaddress:3000 on your browser --> you should be able to see the Todo app (frontend only) running.
 After verification, you can kill this docker process : 
 ```bash
-docker kill containerID
+$ docker kill containerID
 ```
 
-
+### Pushing the image to AWS ECR
+Pre-req : Install AWS cli on your system
+```bash
+$ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+$ sudo apt install unzip
+$ unzip awscliv2.zip
+$ sudo ./aws/install -i /usr/local/aws-cli -b /usr/local/bin --update
+$ aws configure (provide your ID and secret key here, default region and output can be left blank)
+```
+Creating Repository on AWS ECR (Elastic Container Registry)
+```bash
+AWS --> ECR --> create repository --> public --> Name: three-tier-frontend --> create
+```
+We need to push our image in this repository. Click on "view push commands". You will see the commands here. Follow them.
 
 
 
