@@ -167,9 +167,30 @@ services running --> kubectl get svc -n three-tier
 ```
 With this we have deployed MongoDB.
 
+### Deploying Backend
 
+```bash
+$ cd /home/ubuntu/3-tier-AppDeploy-AWS-EKS/Kubernetes-Manifests-file/Backend
+```
+Make sure in deployment.yaml file, the container image points to the three-tier-backend ECR Image Registry (ECR --> three-tier-backend --> image --> copy URI)
+```bash
+$ kubectl apply -f deployment.yaml
+$ kubectl apply -f service.yaml
+$ kubectl get pods -n three-tier
+$ kubectl logs api-7c8795fdf6-rrj6q -n three-tier (backend should be able to connect to database)
+```
+![Backend connected to database]()
+Deploying frontend
 
-![Deployments and services running](https://github.com/janvykumar/3-tier-AppDeploy-AWS-EKS/blob/main/Screenshot%202024-05-28%20233214.png?raw=true)
+cd /home/ubuntu/3-tier-AppDeploy-AWS-EKS/Kubernetes-Manifests-file/Frontend
+In deployment.yaml file, image should be pointed to three-tier-frontend ECR Image
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+kubectl get pods -n three-tier
+
+All our tier's are deployed now.
+
+![Deployments and services running](https://github.com/janvykumar/3-tier-AppDeploy-AWS-EKS/blob/main/Screenshot%202024-05-28%20234156.png?raw=true)
 
 
 
